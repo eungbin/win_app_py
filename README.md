@@ -2,3 +2,4 @@
 ## 나만의 Windows Application 제작
 ###### 2021-02-01 학과 공지 크롤링 
 ###### 2021-02-02 GUI Study [tkinter]
+###### 예정) 학과 공지 GUI 표현
