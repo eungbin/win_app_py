@@ -18,7 +18,6 @@ notice_data = soup.select("body > div#wrapper_lightblue > div#wrap_lightblue > d
 strArr_notice_data = []
 
 for i in notice_data:
-    print(i.get_text())
     strArr_notice_data.append(i.get_text())
 
 notice_length = strArr_notice_data.__len__()
@@ -29,6 +28,11 @@ root.title("My Useful Window Application")
 # 크기 지정
 root.geometry("640x480")
 
+# 학과공지 제목 Label
+com_sci_notice_label = Label(root, text="학 과 공 지")
+com_sci_notice_label.pack()
+
+# 학과공지
 notice_area = Text(root, width=100, height=notice_length)
 for i in range(notice_length):
     notice_area.insert(END, strArr_notice_data[i] + "\n")
