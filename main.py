@@ -4,14 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 from tkinter import *
 
-# 함수 선언부
-def btnCmd():
-    print("버튼이 클릭되었습니다.")
-
-def change():
-    # label의 텍스트를 변경
-    label1.config(text="텍스트가 변경되었습니다.")
-
 # ------------------------------------------------------------------------------------------------------------------
 
 # 컴퓨터정보과 학과공지 url
