@@ -1,26 +1,41 @@
 import os
+from bs4.element import TemplateString
 
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *
 
-# ------------------------------------------------------------------------------------------------------------------
+def load_notice(type):
+    # 학과공지 불러오기 버튼 OR 학교공지 불러오기 버튼
+    if type == notice_area:
+        url = "https://cms.itc.ac.kr/site/cs/boardList.do?boardSeq=149&key=485&part=116"
+    else:
+        print("학과공지만 가능")
+    
+    # url을 이용하여 크롤링
+    notice_url = requests.get(url)
+    soup = BeautifulSoup(notice_url.content, "html.parser")
+    notice_data = soup.select("body > div#wrapper_lightblue > div#wrap_lightblue > div#container > \
+                                div#rowgroup1 > div#contents > div#board > form > table.bbs_default_list > \
+                                tbody.tb > tr > td.subject > a")
 
-# 컴퓨터정보과 학과공지 url
-inhatc_com_sci_notice_url = requests.get("https://cms.itc.ac.kr/site/cs/boardList.do?boardSeq=149&key=485&part=116")
-soup = BeautifulSoup(inhatc_com_sci_notice_url.content, "html.parser")
+    # 학과 공지 제목들 담을 리스트
+    strArr_notice_data = []
 
-notice_data = soup.select("body > div#wrapper_lightblue > div#wrap_lightblue > div#container > \
-                            div#rowgroup1 > div#contents > div#board > form > table.bbs_default_list > \
-                            tbody.tb > tr > td.subject > a")
+    for i in notice_data:
+        strArr_notice_data.append(i.get_text())
 
-# 학과 공지 제목들 담을 리스트
-strArr_notice_data = []
+    notice_length = strArr_notice_data.__len__()
 
-for i in notice_data:
-    strArr_notice_data.append(i.get_text())
-
-notice_length = strArr_notice_data.__len__()
+    # 읽기,쓰기 모두 가능
+    type.configure(state="normal")
+    # Text 초기화
+    type.delete("1.0", "end")
+    # 공지내용 Text 추가
+    for i in range(notice_length):
+        type.insert(END, strArr_notice_data[i] + "\n")
+    # 읽기전용으로 변경
+    type.configure(state="disabled")
 
 root = Tk()
 # 제목 지정
@@ -32,11 +47,15 @@ root.geometry("640x480")
 com_sci_notice_label = Label(root, text="학 과 공 지")
 com_sci_notice_label.pack()
 
-# 학과공지
-notice_area = Text(root, width=100, height=notice_length)
-for i in range(notice_length):
-    notice_area.insert(END, strArr_notice_data[i] + "\n")
+# 학과공지 불러오기 버튼
+com_sci_notice_btn = Button(root, text="학과공지 불러오기", command=lambda: load_notice(notice_area))
+com_sci_notice_btn.pack()
+
+# 학과공지 state=disabled -> read only
+notice_area = Text(root, width=100, height=15)
+notice_area.configure(state="disabled")
 notice_area.pack()
+
 
 # 버튼 생성
 # btn1 = Button(root, text="버튼1", command=btnCmd)
