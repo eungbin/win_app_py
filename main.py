@@ -3,21 +3,44 @@ from bs4.element import TemplateString
 
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
 from tkinter import *
+import time
 
 def load_notice(type):
+    notice_data = []
     # 학과공지 불러오기 버튼 OR 학교공지 불러오기 버튼
-    if type == notice_area:
+    if type == com_sci_notice_area:
         url = "https://cms.itc.ac.kr/site/cs/boardList.do?boardSeq=149&key=485&part=116"
-    else:
-        print("학과공지만 가능")
-    
-    # url을 이용하여 크롤링
-    notice_url = requests.get(url)
-    soup = BeautifulSoup(notice_url.content, "html.parser")
-    notice_data = soup.select("body > div#wrapper_lightblue > div#wrap_lightblue > div#container > \
-                                div#rowgroup1 > div#contents > div#board > form > table.bbs_default_list > \
-                                tbody.tb > tr > td.subject > a")
+        # url을 이용하여 크롤링
+        notice_url = requests.get(url)
+        soup = BeautifulSoup(notice_url.content, "html.parser")
+        notice_data = soup.select("body > div#wrapper_lightblue > div#wrap_lightblue > div#container > \
+                                    div#rowgroup1 > div#contents > div#board > form > table.bbs_default_list > \
+                                    tbody.tb > tr > td.subject > a")
+    elif type == inhatc_notice_area:
+        url = "https://www.inhatc.ac.kr/kr/460/subview.do"
+        # url을 이용하여 크롤링
+
+        browser = webdriver.PhantomJS()
+        browser.get(url)
+        html = browser.page_source
+
+        notice_url = requests.get(url)
+        # soup = BeautifulSoup(notice_url.content, "html.parser")
+
+        soup = BeautifulSoup(html.content, "html.parser")
+        
+        # notice_data = soup.select("body > div.wrap_contents > div.container > div.contents > div#contentsEditHtml > \
+        #                             article#_contentBuilder > div._obj > div._fnctWrap > table.board-table > \
+        #                             tbody > tr > td.td-subject")
+        while notice_data.__len__() < 1:
+            notice_data = soup.select("body > div.wrap_contents > div.container > div.contents > div#contentsEditHtml > \
+                                        article#_contentBuilder > div._obj > div._fnctWrap")
+            time.sleep(1)
+            print("1초 지남...")
+        print(notice_data)
+        return
 
     # 학과 공지 제목들 담을 리스트
     strArr_notice_data = []
@@ -41,21 +64,33 @@ root = Tk()
 # 제목 지정
 root.title("My Useful Window Application")
 # 크기 지정
-root.geometry("640x480")
+root.geometry("700x520")
 
 # 학과공지 제목 Label
 com_sci_notice_label = Label(root, text="학 과 공 지")
 com_sci_notice_label.pack()
 
 # 학과공지 불러오기 버튼
-com_sci_notice_btn = Button(root, text="학과공지 불러오기", command=lambda: load_notice(notice_area))
+com_sci_notice_btn = Button(root, text="학과공지 불러오기", command=lambda: load_notice(com_sci_notice_area))
 com_sci_notice_btn.pack()
 
 # 학과공지 state=disabled -> read only
-notice_area = Text(root, width=100, height=15)
-notice_area.configure(state="disabled")
-notice_area.pack()
+com_sci_notice_area = Text(root, width=80, height=15)
+com_sci_notice_area.configure(state="disabled")
+com_sci_notice_area.pack()
 
+# 학교공지 제목 Label
+inhatc_notice_label = Label(root, text="학 교 공 지")
+inhatc_notice_label.pack()
+
+# 학교공지 불러오기 버튼
+inhatc_notice_btn = Button(root, text="학교공지 불러오기", command=lambda: load_notice(inhatc_notice_area))
+inhatc_notice_btn.pack()
+
+# 학교공지 read only
+inhatc_notice_area = Text(root, width=80, height=15)
+inhatc_notice_area.configure(state="disabled")
+inhatc_notice_area.pack()
 
 # 버튼 생성
 # btn1 = Button(root, text="버튼1", command=btnCmd)
